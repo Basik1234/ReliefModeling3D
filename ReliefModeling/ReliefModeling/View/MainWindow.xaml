@@ -1,0 +1,47 @@
+﻿<Window x:Class="ReliefModeling.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:openTk = "clr-namespace:OpenTK;assembly=OpenTK"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid ShowGridLines="True">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height = "Auto"/>
+        </Grid.RowDefinitions>
+
+        <ToolBarTray Grid.Row="0">
+            <ToolBar>
+                <Button Content="Load Bitmap"
+                        Command="{Binding CommandLoadImage}"/>
+                <Button Content="Convert To 3D"
+                        Command="{Binding CommandConver2DTo3D}"/>
+            </ToolBar>
+        </ToolBarTray>
+        
+        <Grid ShowGridLines="True" 
+            Grid.Row="1">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <Image Grid.Column="0"
+                   Source="{Binding BitmapImage}">
+                
+            </Image>
+            
+            
+            
+        </Grid>
+        
+        <TextBox Grid.Row="2"
+                 Text="{Binding LogTextBox, UpdateSourceTrigger= PropertyChanged}"/>
+
+    </Grid>
+</Window>
