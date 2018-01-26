@@ -15,7 +15,7 @@ namespace ReliefModeling.ViewModel
         #region Fields
         
         private BitmapImage _bitmapImage;
-        private BitmapImage3D _bitmapImage3D;
+        private Shape _shape;
         private string _logTextBox;
         private RelayCommand _commandLoadImage;
         private RelayCommand _commandConver2DTo3D;
@@ -34,12 +34,12 @@ namespace ReliefModeling.ViewModel
                     }
                 }
         
-        public BitmapImage3D BitmapImage3D
+        public Shape Shape
                 {
-                    get => _bitmapImage3D;
+                    get => _shape;
                     set
                     {
-                        _bitmapImage3D = value;
+                        _shape = value;
                         OnPropertyChanged();
                     }
                 }
@@ -77,7 +77,7 @@ namespace ReliefModeling.ViewModel
                     {
                         try
                         {
-                            BitmapImage3D = Convertor.Convert2DTo3D(BitmapImage);
+                            Shape = Convertor.Convert2DTo3D(BitmapImage);
                             LogTextBox += $"Конвертируем: {BitmapImage.ToString()} \n";
                         }
                         catch (Exception e)

@@ -2,7 +2,7 @@
 
 namespace ReliefModeling.Model
 {
-    public class BitmapImage3D
+    public class Shape
     {
         public Vector3[] vertices;
         public int[] indices;
