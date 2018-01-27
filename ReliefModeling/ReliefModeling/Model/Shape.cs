@@ -10,6 +10,7 @@ using OpenTK;
 
          public Shape()
          {
+             //TODO рефакторинг
              Vertices = new[]
              {
                  new Vector3(-1.0f, -1.0f,  1.0f),

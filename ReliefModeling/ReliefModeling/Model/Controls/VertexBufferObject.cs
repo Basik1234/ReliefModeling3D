@@ -2,8 +2,7 @@
 {
     internal struct VertexBufferObject
     {
-        public int VertexBufferID;
-        public int ElementBufferID;
-        public int NumElements;
+        public int VertexBufferId;
+        public int ElementBufferId;
     }
 }
