@@ -12,18 +12,17 @@ namespace ReliefModeling.ViewModel
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        #region Fields
+
         private const string ImagePath =
             "C:\\Users\\Basik\\Desktop\\Univer\\Git\\3D Relief Modeling\\ReliefModeling\\ReliefModeling\\Resource\\image.bmp";
 
-        #region Fields
-
         private BitmapImage _bitmapImage;
-        private Shape _shape;
         private string _logTextBox;
         private RelayCommand _commandLoadImage;
         private RelayCommand _commandConver2DTo3D;
         
-        public readonly View3D view3D = new View3D(new Shape());
+        public readonly View3D View3D = new View3D();
         
         #endregion
 
@@ -38,17 +37,6 @@ namespace ReliefModeling.ViewModel
                 OnPropertyChanged();
             }
         }
-
-        public Shape Shape
-        {
-            get => _shape;
-            set
-            {
-                _shape = value;
-                OnPropertyChanged();
-            }
-        }
-
         public string LogTextBox
         {
             get => _logTextBox;
@@ -58,6 +46,7 @@ namespace ReliefModeling.ViewModel
                 OnPropertyChanged();
             }
         }
+        
         #endregion
         
         #region Command
@@ -89,8 +78,7 @@ namespace ReliefModeling.ViewModel
                 {
                     try
                     {
-                        Shape = Convertor.Convert2DTo3D(BitmapImage);
-                        view3D.Shape = new Shape();
+                        View3D.Shape = Convertor.Convert2DTo3D(BitmapImage);
                         LogTextBox += $"Конвертируем: {BitmapImage.ToString()} \n";
                     }
                     catch (Exception e)
@@ -100,6 +88,7 @@ namespace ReliefModeling.ViewModel
                 }));
             }
         }
+        
         #endregion
         
         public event PropertyChangedEventHandler PropertyChanged;

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Forms;
-using System.Windows.Forms.Integration;
-using OpenTK;
-using ReliefModeling.Model;
-using ReliefModeling.Model.Controls;
+﻿using System.Windows;
 using ReliefModeling.ViewModel;
 
 namespace ReliefModeling.View
@@ -26,7 +19,7 @@ namespace ReliefModeling.View
         {
             if (DataContext is MainViewModel vm)
             {
-                ControlView3DObject.Child = vm.view3D;
+                ControlView3DObject.Child = vm.View3D;
             }
         }
     }

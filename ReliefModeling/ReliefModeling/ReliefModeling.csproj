@@ -69,6 +69,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\Controls\VertexBufferObject.cs" />
     <Compile Include="Model\Shape.cs" />
     <Compile Include="Model\Controls\View3D.cs" />
     <Compile Include="Services\Convertor.cs" />
