@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525"
+         DataContextChanged="MainWindow_OnDataContextChanged">
     <Grid ShowGridLines="True">
 
         <Grid.RowDefinitions>
@@ -34,7 +35,7 @@
                    Source="{Binding BitmapImage}"/>
             
             <WindowsFormsHost Grid.Column="1"
-                              Initialized="{Binding ControlInitEvent}"/>
+                              x:Name="ControlView3DObject"/>
             
         </Grid>
         

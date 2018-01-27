@@ -17,104 +17,94 @@ namespace ReliefModeling.ViewModel
 
         #region Fields
 
-        private View3D _view3D;
         private BitmapImage _bitmapImage;
         private Shape _shape;
         private string _logTextBox;
         private RelayCommand _commandLoadImage;
         private RelayCommand _commandConver2DTo3D;
         
-        public delegate void ControlInitDelegate(object sender, EventArgs e);
-        public event ControlInitDelegate ControlInitEvent;
+        public readonly View3D view3D = new View3D(new Shape());
         
         #endregion
 
         #region Properties
 
         public BitmapImage BitmapImage
-                {
-                    get => _bitmapImage;
-                    set
-                    {
-                        _bitmapImage = value;
-                        OnPropertyChanged();
-                    }
-                }
-        
+        {
+            get => _bitmapImage;
+            set
+            {
+                _bitmapImage = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Shape Shape
-                {
-                    get => _shape;
-                    set
-                    {
-                        _shape = value;
-                        OnPropertyChanged();
-                    }
-                }
-        
+        {
+            get => _shape;
+            set
+            {
+                _shape = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string LogTextBox
-                {
-                    get => _logTextBox;
-                    set
-                    {
-                        _logTextBox = value;
-                        OnPropertyChanged();
-                    }
-                }
+        {
+            get => _logTextBox;
+            set
+            {
+                _logTextBox = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+        
+        #region Command
         
         public RelayCommand CommandLoadImage
+        {
+            get
+            {
+                return _commandLoadImage ?? (_commandLoadImage = new RelayCommand(obj =>
                 {
-                    get { return _commandLoadImage ?? (_commandLoadImage = new RelayCommand(obj =>
+                    try
                     {
-                        try
-                        {
-                            BitmapImage = new BitmapImage(new Uri(ImagePath));
-                            LogTextBox += $"Загрузка: {BitmapImage.ToString()} \n";
-                        }
-                        catch (Exception e)
-                        {
-                            LogTextBox += $"Неудалось: {e.Message} \n";
-                        }
-                        
-                    })); }
-                }
-        
+                        BitmapImage = new BitmapImage(new Uri(ImagePath));
+                        LogTextBox += $"Загрузка: {BitmapImage.ToString()} \n";
+                    }
+                    catch (Exception e)
+                    {
+                        LogTextBox += $"Неудалось: {e.Message} \n";
+                    }
+                }));
+            }
+        }
+
         public RelayCommand CommandConver2DTo3D
+        {
+            get
+            {
+                return _commandConver2DTo3D ?? (_commandConver2DTo3D = new RelayCommand(obj =>
                 {
-                    get { return _commandConver2DTo3D ?? (_commandConver2DTo3D = new RelayCommand(obj =>
+                    try
                     {
-                        try
-                        {
-                            Shape = Convertor.Convert2DTo3D(BitmapImage);
-                            LogTextBox += $"Конвертируем: {BitmapImage.ToString()} \n";
-                        }
-                        catch (Exception e)
-                        {
-                            LogTextBox += $"Неудалось: {e.Message} \n";
-                        }
-                        
-                    })); }
-                }
-
-        #endregion
-
-        #region Constructor
-
-        public MainViewModel()
-        {
-            ControlInitEvent = View3DControlInit;
+                        Shape = Convertor.Convert2DTo3D(BitmapImage);
+                        view3D.Shape = new Shape();
+                        LogTextBox += $"Конвертируем: {BitmapImage.ToString()} \n";
+                    }
+                    catch (Exception e)
+                    {
+                        LogTextBox += $"Неудалось: {e.Message} \n";
+                    }
+                }));
+            }
         }
-
         #endregion
-        
-        public void View3DControlInit(object sender, EventArgs e)
-        {
-            //_view3D = new View3D(Shape) {Dock = DockStyle.Fill};
-            //_view3D.MakeCurrent();
-            //(sender as WindowsFormsHost).Child = _view3D;
-        }
         
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName]string prop = "")
+
+        private void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
