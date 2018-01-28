@@ -1,6 +1,6 @@
 ﻿namespace ReliefModeling.Model.Controls
 {
-    internal struct VertexBufferObject
+    public class VertexBufferObject
     {
         public int VertexBufferId;
         public int ElementBufferId;

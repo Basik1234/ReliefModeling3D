@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using OpenTK;
@@ -11,10 +10,11 @@ namespace ReliefModeling.Model.Controls
     {
         #region PrivateField
 
-        private const float PerspectiveViewNearZ = 1.0f;
-        private const float PerspectiveViewFarZ = 64.0f;
+        private const float PerspectiveViewNearZ = 1.0f;         //расстояние до ближней грани фрустума камеры
+        private const float PerspectiveViewFarZ = 64.0f;         //расстояние до дальней грани фрустума камеры
         
-        private VertexBufferObject _vertexBufferObject;
+        private VertexBufferObject VertexBufferObject { get; set; }
+        private Camera Camera { get; set; }
 
         #endregion
         
@@ -22,6 +22,8 @@ namespace ReliefModeling.Model.Controls
         
         public View3D()
         {
+            VertexBufferObject = new VertexBufferObject();
+            Camera = new Camera();
             Shape = new Shape();
             
             var timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(1)};
@@ -39,10 +41,7 @@ namespace ReliefModeling.Model.Controls
             var p = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Width / (float)Height, PerspectiveViewNearZ, PerspectiveViewFarZ);
             GL.LoadMatrix(ref p);
 
-            GL.MatrixMode(MatrixMode.Modelview);
-            //TODO рефакторинг
-            var mv = Matrix4.LookAt(new Vector3(0,0,7), Vector3.Zero, new Vector3(1,0,0));
-            GL.LoadMatrix(ref mv);
+            ActionOnCamera();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -52,17 +51,17 @@ namespace ReliefModeling.Model.Controls
             GL.ClearColor(0.1f, 0.1f, 0.5f, 0.0f);
             GL.Enable(EnableCap.DepthTest);
             
-            GL.GenBuffers(1, out _vertexBufferObject.VertexBufferId);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject.VertexBufferId);
+            GL.GenBuffers(1, out VertexBufferObject.VertexBufferId);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject.VertexBufferId);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Shape.Vertices.Length * Vector3.SizeInBytes), Shape.Vertices, BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
-            GL.GenBuffers(1, out _vertexBufferObject.ElementBufferId);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _vertexBufferObject.ElementBufferId);
+            GL.GenBuffers(1, out VertexBufferObject.ElementBufferId);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, VertexBufferObject.ElementBufferId);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(Shape.Indices.Length * sizeof(int)), Shape.Indices, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
-
+        
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);            
@@ -71,23 +70,42 @@ namespace ReliefModeling.Model.Controls
                 ClearBufferMask.DepthBufferBit |
                 ClearBufferMask.StencilBufferBit);
             
+            ActionOnCamera();
+            
             GL.PushClientAttrib(ClientAttribMask.ClientVertexArrayBit);
             
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject.VertexBufferId);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject.VertexBufferId);
             GL.VertexPointer(3, VertexPointerType.Float, Vector3.SizeInBytes, IntPtr.Zero);
             GL.EnableClientState(EnableCap.VertexArray);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _vertexBufferObject.ElementBufferId);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, VertexBufferObject.ElementBufferId);
             GL.DrawElements(BeginMode.Lines, Shape.Indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
             GL.PopClientAttrib();
             
             SwapBuffers();
         }
-        
+
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            base.OnMouseWheel(e);
+
+            Camera.Transform = e.Delta > 0
+                ? new Vector3(0, 0, Camera.Transform.Z + 1)
+                : new Vector3(0, 0, Camera.Transform.Z - 1);
+        }
+
         private void TimerOnTick(object sender, EventArgs e)
         { 
             Invalidate();
+        }
+
+        private void ActionOnCamera()
+        {
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            var modelview = Matrix4.LookAt(Camera.Transform, Camera.Directiron, Camera.Up);
+            GL.LoadMatrix(ref modelview);
         }
         
     }

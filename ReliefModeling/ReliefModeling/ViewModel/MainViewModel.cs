@@ -1,11 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Forms;
-using System.Windows.Forms.Integration;
 using System.Windows.Media.Imaging;
 using ReliefModeling.Services;
-using ReliefModeling.Model;
 using ReliefModeling.Model.Controls;
 
 namespace ReliefModeling.ViewModel
