@@ -9,7 +9,7 @@ namespace ReliefModeling.View
     /// </summary>
     public partial class MainWindow
     {
-        
+        //TODO сделать растягивалки как в unity
         public MainWindow()
         {
             InitializeComponent();

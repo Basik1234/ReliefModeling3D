@@ -69,11 +69,27 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Const.cs" />
+    <Compile Include="Model\Carriages\Carriage.cs" />
+    <Compile Include="Model\Carriages\Spiral.cs" />
     <Compile Include="Model\Controls\Camera.cs" />
     <Compile Include="Model\Controls\VertexBufferObject.cs" />
+    <Compile Include="Model\Recognize\AlgorithmsForSearchingIsolines.cs" />
+    <Compile Include="Model\Recognize\Direction.cs" />
+    <Compile Include="Model\Recognize\FinderEdgeDots.cs" />
+    <Compile Include="Model\Recognize\FinderFullDots.cs" />
+    <Compile Include="Model\Recognize\IFinderIsolines.cs" />
+    <Compile Include="Model\Recognize\Isoline.cs" />
+    <Compile Include="Model\Recognize\Layer\IFinderLayer.cs" />
+    <Compile Include="Model\Recognize\Layer\SpiralFinderLayer.cs" />
+    <Compile Include="Model\Recognize\MapLegend.cs" />
+    <Compile Include="Model\Recognize\MaskDots.cs" />
+    <Compile Include="Model\Recognize\RecognizeMap.cs" />
     <Compile Include="Model\Shape.cs" />
     <Compile Include="Model\Controls\View3D.cs" />
     <Compile Include="Services\Convertor.cs" />
+    <Compile Include="Services\ImageManager.cs" />
+    <Compile Include="Services\MathHelper.cs" />
     <Compile Include="Services\RelayCommand.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">

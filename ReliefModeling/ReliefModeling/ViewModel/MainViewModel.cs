@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
+using ReliefModeling.Model;
 using ReliefModeling.Services;
 using ReliefModeling.Model.Controls;
 
@@ -16,6 +18,7 @@ namespace ReliefModeling.ViewModel
 
         private BitmapImage _bitmapImage;
         private string _logTextBox;
+        private Image _image;
         private RelayCommand _commandLoadImage;
         private RelayCommand _commandConver2DTo3D;
         
@@ -43,7 +46,16 @@ namespace ReliefModeling.ViewModel
                 OnPropertyChanged();
             }
         }
-        
+        private Image Image
+        {
+            get => _image;
+            set
+            {
+                _image = value;
+                BitmapImage = value.ToBitmapImage();
+            }
+        }
+
         #endregion
         
         #region Command
@@ -56,8 +68,8 @@ namespace ReliefModeling.ViewModel
                 {
                     try
                     {
-                        BitmapImage = new BitmapImage(new Uri(ImagePath));
-                        LogTextBox += $"Загрузка: {BitmapImage.ToString()} \n";
+                        Image = new Bitmap(ImagePath);
+                        LogTextBox += $"Загрузка: {ImagePath} \n";
                     }
                     catch (Exception e)
                     {
@@ -75,7 +87,7 @@ namespace ReliefModeling.ViewModel
                 {
                     try
                     {
-                        View3D.Shape = Convertor.Convert2DTo3D(BitmapImage);
+                        View3D.Shape = Image.To3D();
                         LogTextBox += $"Конвертируем: {BitmapImage.ToString()} \n";
                     }
                     catch (Exception e)

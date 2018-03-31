@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace ReliefModeling.Model.Controls
 {
@@ -11,15 +14,24 @@ namespace ReliefModeling.Model.Controls
         #region PrivateField
 
         private const float PerspectiveViewNearZ = 1.0f;         //расстояние до ближней грани фрустума камеры
-        private const float PerspectiveViewFarZ = 64.0f;         //расстояние до дальней грани фрустума камеры
-        
-        private VertexBufferObject VertexBufferObject { get; set; }
-        private Camera Camera { get; set; }
+        private const float PerspectiveViewFarZ = 500.0f;       //расстояние до дальней грани фрустума камеры
+
+        private Point _coordMouse;
+        private Shape _shape;
+        private VertexBufferObject VertexBufferObject { get;}
+        private Camera Camera { get;}
 
         #endregion
         
-        public Shape Shape { private get; set; }
-        
+        public Shape Shape
+        {
+            private get => _shape;
+            set
+            {
+                _shape = value;
+                if(VertexBufferObject.VertexBufferId > 0) OnLoad(EventArgs.Empty);
+            }
+        }
         public View3D()
         {
             VertexBufferObject = new VertexBufferObject();
@@ -48,7 +60,7 @@ namespace ReliefModeling.Model.Controls
         {
             base.OnLoad(e);
 
-            GL.ClearColor(0.1f, 0.1f, 0.5f, 0.0f);
+            GL.ClearColor(Color.DimGray);
             GL.Enable(EnableCap.DepthTest);
             
             GL.GenBuffers(1, out VertexBufferObject.VertexBufferId);
@@ -79,7 +91,7 @@ namespace ReliefModeling.Model.Controls
             GL.EnableClientState(EnableCap.VertexArray);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, VertexBufferObject.ElementBufferId);
-            GL.DrawElements(BeginMode.Lines, Shape.Indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            GL.DrawElements(BeginMode.Points, Shape.Indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
             GL.PopClientAttrib();
             
@@ -90,9 +102,22 @@ namespace ReliefModeling.Model.Controls
         {
             base.OnMouseWheel(e);
 
-            Camera.Transform = e.Delta > 0
-                ? new Vector3(0, 0, Camera.Transform.Z + 1)
-                : new Vector3(0, 0, Camera.Transform.Z - 1);
+            Camera.Radius += e.Delta > 0 ? 1 : -1;
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (_coordMouse != Point.Empty)
+            {
+                if (Mouse.GetState()[MouseButton.Middle] || Keyboard.GetState()[Key.R])
+                {
+                    Camera.Longitude -= e.X - _coordMouse.X;
+                    Camera.PolarDistance -= e.Y - _coordMouse.Y;
+                }
+            }
+            _coordMouse = e.Location;
         }
 
         private void TimerOnTick(object sender, EventArgs e)
