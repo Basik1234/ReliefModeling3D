@@ -7,7 +7,8 @@ namespace ReliefModelingTests.AlgorithmsFinderIsolines
     {
         protected override FinderEdgeDots GetInstance(Bitmap bitmap)
         {
-            return new FinderEdgeDots(bitmap);
+            //TODO 
+            return new FinderEdgeDots(bitmap, bitmap);
         }
     }
 }

@@ -1,30 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using ReliefModeling.Model;
 using ReliefModeling.Model.Recognize;
 
 namespace ReliefModeling.Services
 {
     public static class ImageManager
     {
-        public static IEnumerable<Isoline> GetIsolines(this Bitmap bitmap, AlgorithmsForSearchingIsolines algorithm)
+        public static IEnumerable<Isoline> GetIsolines(this Bitmap bitmap, Bitmap legend, AlgorithmsForSearchingIsolines algorithm)
         {
+            Logger.Instance.WriteLine($"Алгоритм поиска изолиний - {algorithm}");
+
             IFinderIsolines finder;
-            
+
             switch (algorithm)
             {
                 case AlgorithmsForSearchingIsolines.FullDots:
                     finder = new FinderFullDots(bitmap);
                     break;
                 case AlgorithmsForSearchingIsolines.EdgeDots:
-                    finder = new FinderEdgeDots(bitmap);
+                    finder = new FinderEdgeDots(bitmap,legend);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null);
             }
 
             var isolines = finder.Find();
-            
+
             return isolines;
         }
 
@@ -42,27 +45,19 @@ namespace ReliefModeling.Services
             return pixels;
         }
 
-        private static bool IsInside(this Image bitmap, Point point)
-        {
-            return point.X >= 0 && point.X < bitmap.Width && point.Y >= 0 && point.Y < bitmap.Height;
-        }
-
-        public static Color GetPixelSafe(this Bitmap bitmap, Point point)
-        {
-            return bitmap.IsInside(point) ? bitmap.GetPixel(point.X, point.Y) : Const.COLOR_OUTSIDE;
-        }
-
         public static Color GetPixelSafe(this Bitmap bitmap, int x, int y)
         {
             return bitmap.GetPixelSafe(new Point(x, y));
         }
 
-        public static RecognizeMap ConvertColorBitmapInRecognizeMap(this Bitmap bitmap)
+        private static Color GetPixelSafe(this Bitmap bitmap, Point point)
         {
-            var recognizeMap = new RecognizeMap(new int[bitmap.Width, bitmap.Height]);
+            return bitmap.IsInside(point) ? bitmap.GetPixel(point.X, point.Y) : Const.COLOR_OUTSIDE;
+        }
 
-            //TODO;
-            return recognizeMap;
+        private static bool IsInside(this Image bitmap, Point point)
+        {
+            return point.X >= 0 && point.X < bitmap.Width && point.Y >= 0 && point.Y < bitmap.Height;
         }
     }
 }

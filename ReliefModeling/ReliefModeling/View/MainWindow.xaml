@@ -18,6 +18,8 @@
             <ToolBar>
                 <Button Content="Load Bitmap"
                         Command="{Binding CommandLoadImage}"/>
+                <Button Content="Load Legend"
+                        Command="{Binding CommandLoadLegend}"/>
                 <Button Content="Convert To 3D"
                         Command="{Binding CommandConver2DTo3D}"/>
             </ToolBar>
@@ -30,17 +32,31 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
-            <Image Grid.Column="0"
-                   Source="{Binding BitmapImage}"/>
+
+            <Grid ShowGridLines="True"
+                  Grid.Column="0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                
+                <Image Grid.Column="0"
+                       Source="{Binding BitmapImage}"/>
+                <Image Grid.Column="1"
+                       Source="{Binding BitmapLegend}"/>
+
+            </Grid>
             
             <WindowsFormsHost Grid.Column="1"
                               x:Name="ControlView3DObject"/>
             
         </Grid>
-        
-        <TextBox Grid.Row="2"
-                 Text="{Binding LogTextBox, UpdateSourceTrigger= PropertyChanged}"/>
+
+        <StackPanel Grid.Row="2">
+
+            <TextBox Text="{Binding Path=Logger.Log, UpdateSourceTrigger= PropertyChanged}" />
+        </StackPanel>
 
     </Grid>
 </Window>

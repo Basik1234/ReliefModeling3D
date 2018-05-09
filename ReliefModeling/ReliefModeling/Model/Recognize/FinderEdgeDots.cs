@@ -10,7 +10,6 @@ namespace ReliefModeling.Model.Recognize
 {
     public class FinderEdgeDots : IFinderIsolines
     {
-        //private readonly Bitmap _bitmap;
         private RecognizeMap _recognizeMap;
         private Carriage _carriage;
         private Direction _lastDirection;
@@ -18,31 +17,32 @@ namespace ReliefModeling.Model.Recognize
         private MapLegend _mapLegend;
         private IFinderLayer _finderLayer;
         
-        public FinderEdgeDots(Bitmap bitmap)
+        public FinderEdgeDots(Bitmap bitmap, Bitmap legend)
         {
-            _recognizeMap = bitmap.ConvertColorBitmapInRecognizeMap();
             _carriage = default(Carriage);
             _lastDirection = default(Direction);
             _startPoint = default(Point);
-            _mapLegend = default(MapLegend);
+            _mapLegend = new MapLegend(legend);
+            
+            _recognizeMap = bitmap.ConvertColorBitmapInRecognizeMap(_mapLegend);
             _finderLayer = new SpiralFinderLayer(_recognizeMap);
         }
         
         public List<Isoline> Find()
         {
             var isolines = new List<Isoline>();
+            var levelLayer = 0;
             
             for (var y = 0; y < _recognizeMap.Height; y++)
             {
                 for (var x = 0; x < _recognizeMap.Width; x++)
                 {
+                    
                     if (!_recognizeMap[x,y].Equals(Const.ID_ISOLINE_MAP)) continue;
 
-                    if (_bitmap.GetAroundPixels(x, y).Contains(Color.FromArgb(Const.COLOR_DISCOVER_ISOLINE.R,
-                                                                              Const.COLOR_DISCOVER_ISOLINE.G,
-                                                                              Const.COLOR_DISCOVER_ISOLINE.B)))
+                    if (_recognizeMap.GetAroundPixels(x, y).Contains(Const.ID_DISCOVER_ISOLINE_MAP))
                     {
-                        _bitmap.SetPixel(x, y, Const.COLOR_DISCOVER_ISOLINE);
+                        _recognizeMap[x, y] = Const.ID_DISCOVER_ISOLINE_MAP;
                         continue;
                     }
 
@@ -171,10 +171,10 @@ namespace ReliefModeling.Model.Recognize
             {
                 for (var y = 0; y < _carriage.Points.GetLength(1);y++)
                 {
-                    if(!_bitmap.GetPixelSafe(_carriage.Points[x,y]).ToArgb().Equals(Const.COLOR_ISOLINE.ToArgb()))continue;
+                    if(!_recognizeMap.GetPixelSafe(_carriage.Points[x,y]).Equals(Const.ID_ISOLINE_MAP))continue;
                     
                     dots.Add(new Point(_carriage.Points[x,y].X,_carriage.Points[x,y].Y));
-                    _bitmap.SetPixel(_carriage.Points[x,y].X,_carriage.Points[x,y].Y,Const.COLOR_DISCOVER_ISOLINE);
+                    _recognizeMap[_carriage.Points[x, y].X, _carriage.Points[x, y].Y] = Const.ID_DISCOVER_ISOLINE_MAP;
                 }
             }
 
@@ -185,16 +185,16 @@ namespace ReliefModeling.Model.Recognize
         {   
             return new [,]{
                 {
-                    _bitmap.GetPixelSafe(_carriage.Points[0, 0]).ToArgb().Equals(Const.COLOR_ISOLINE.ToArgb()) ||
-                    _bitmap.GetPixelSafe(_carriage.Points[0, 0]).ToArgb().Equals(Const.COLOR_DISCOVER_ISOLINE.ToArgb()),
-                    _bitmap.GetPixelSafe(_carriage.Points[0, 1]).ToArgb().Equals(Const.COLOR_ISOLINE.ToArgb()) ||
-                    _bitmap.GetPixelSafe(_carriage.Points[0, 1]).ToArgb().Equals(Const.COLOR_DISCOVER_ISOLINE.ToArgb())
+                    _recognizeMap.GetPixelSafe(_carriage.Points[0, 0]).Equals(Const.ID_ISOLINE_MAP) ||
+                    _recognizeMap.GetPixelSafe(_carriage.Points[0, 0]).Equals(Const.ID_DISCOVER_ISOLINE_MAP),
+                    _recognizeMap.GetPixelSafe(_carriage.Points[0, 1]).Equals(Const.ID_ISOLINE_MAP) ||
+                    _recognizeMap.GetPixelSafe(_carriage.Points[0, 1]).Equals(Const.ID_DISCOVER_ISOLINE_MAP)
                 },
                 {
-                    _bitmap.GetPixelSafe(_carriage.Points[1, 0]).ToArgb().Equals(Const.COLOR_ISOLINE.ToArgb()) ||
-                    _bitmap.GetPixelSafe(_carriage.Points[1, 0]).ToArgb().Equals(Const.COLOR_DISCOVER_ISOLINE.ToArgb()),
-                    _bitmap.GetPixelSafe(_carriage.Points[1, 1]).ToArgb().Equals(Const.COLOR_ISOLINE.ToArgb()) ||
-                    _bitmap.GetPixelSafe(_carriage.Points[1, 1]).ToArgb().Equals(Const.COLOR_DISCOVER_ISOLINE.ToArgb())
+                    _recognizeMap.GetPixelSafe(_carriage.Points[1, 0]).Equals(Const.ID_ISOLINE_MAP) ||
+                    _recognizeMap.GetPixelSafe(_carriage.Points[1, 0]).Equals(Const.ID_DISCOVER_ISOLINE_MAP),
+                    _recognizeMap.GetPixelSafe(_carriage.Points[1, 1]).Equals(Const.ID_ISOLINE_MAP) ||
+                    _recognizeMap.GetPixelSafe(_carriage.Points[1, 1]).Equals(Const.ID_DISCOVER_ISOLINE_MAP)
                 }
             };
         }

@@ -74,6 +74,7 @@
     <Compile Include="Model\Carriages\Spiral.cs" />
     <Compile Include="Model\Controls\Camera.cs" />
     <Compile Include="Model\Controls\VertexBufferObject.cs" />
+    <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\Recognize\AlgorithmsForSearchingIsolines.cs" />
     <Compile Include="Model\Recognize\Direction.cs" />
     <Compile Include="Model\Recognize\FinderEdgeDots.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Services\Convertor.cs" />
     <Compile Include="Services\ImageManager.cs" />
     <Compile Include="Services\MathHelper.cs" />
+    <Compile Include="Services\RecognizeMapManager.cs" />
     <Compile Include="Services\RelayCommand.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
