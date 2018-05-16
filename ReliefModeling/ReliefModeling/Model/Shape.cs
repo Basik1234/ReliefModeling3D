@@ -2,7 +2,7 @@
  
  namespace ReliefModeling.Model
  {
-     public class Shape
+     public class Shape : IShape
      {
          public Vector3[] Vertices { get; set; }
          public int[] Indices { get; set; }

@@ -23,14 +23,13 @@ namespace ReliefModeling.Services
 
             var vertices = (from isoline in isolines 
                             from point in isoline.Dots 
-                            select new Vector3(point.X, point.Y, isoline.Level.Max)
+                            select new Vector3(point.X, point.Y, isoline.Level)
                             ).ToList();
 
             var indices = Enumerable.Range(0,vertices.Count);
 
             return new Shape {Vertices = vertices.ToArray(), Indices = indices.ToArray()};
-        }
-        
+        }     
         public static BitmapImage ToBitmapImage(this Image img)
         {
             using (var memory = new MemoryStream())
@@ -46,23 +45,34 @@ namespace ReliefModeling.Services
 
                 return bitmapImage;
             }
-        }
-        
+        }       
         public static RecognizeMap ConvertColorBitmapInRecognizeMap(this Bitmap bitmap, MapLegend mapLegend)
         {
-            var recognizeMap = new RecognizeMap(new int[bitmap.Width, bitmap.Height]);
+            var recognizeMap = new RecognizeMap(new PieaceOfRecognizeMap[bitmap.Width, bitmap.Height]);
             var sw = new StreamWriter("C:\\Users\\Basik\\Desktop\\Univer\\Git\\3D Relief Modeling\\ReliefModeling\\ReliefModeling\\Resource\\debug.txt");
   
             for (var y = 0; y < bitmap.Height; y++)
             {
                 for (var x = 0; x < bitmap.Width; x++)
                 {
-                    if (bitmap.GetPixel(x, y).Equals(Const.COLOR_ISOLINE)) recognizeMap[x, y] = Const.ID_ISOLINE_MAP;
-                    if (bitmap.GetPixel(x, y).Equals(Const.COLOR_DISCOVER_ISOLINE)) recognizeMap[x, y] = Const.ID_DISCOVER_ISOLINE_MAP;
                     if (mapLegend.Heights.Contains(bitmap.GetPixel(x, y)))
-                        recognizeMap[x, y] = Const.RESERVED_ID+mapLegend.Heights.FindIndex(color => color == bitmap.GetPixel(x, y));
-                    
-                    sw.Write(recognizeMap[x,y]);
+                    {
+                        recognizeMap[x, y] = new PieaceOfRecognizeMap
+                        {
+                            Discover = false,
+                            Id = Const.RESERVED_ID +
+                                 mapLegend.Heights.FindIndex(color => color == bitmap.GetPixel(x, y))
+                        };
+                    }
+                    else
+                    {
+                        recognizeMap[x, y] = new PieaceOfRecognizeMap
+                        {
+                            Discover = false,
+                            Id = Const.ID_UNIDENTIFIED
+                        };
+                    }
+                    sw.Write($" {recognizeMap[x,y].Id} ");
                 }
                 sw.WriteLine();
             }

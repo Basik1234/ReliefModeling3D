@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms.Integration;
 using ReliefModeling.Model.Carriages;
 using ReliefModeling.Model.Recognize.Layer;
 using ReliefModeling.Services;
@@ -25,36 +26,35 @@ namespace ReliefModeling.Model.Recognize
             _mapLegend = new MapLegend(legend);
             
             _recognizeMap = bitmap.ConvertColorBitmapInRecognizeMap(_mapLegend);
-            _finderLayer = new SpiralFinderLayer(_recognizeMap);
+            _finderLayer = new ColorFindLayer(_recognizeMap);
         }
         
         public List<Isoline> Find()
         {
             var isolines = new List<Isoline>();
-            var levelLayer = 0;
             
             for (var y = 0; y < _recognizeMap.Height; y++)
             {
                 for (var x = 0; x < _recognizeMap.Width; x++)
-                {
-                    
-                    if (!_recognizeMap[x,y].Equals(Const.ID_ISOLINE_MAP)) continue;
-
-                    if (_recognizeMap.GetAroundPixels(x, y).Contains(Const.ID_DISCOVER_ISOLINE_MAP))
+                {   
+                    if (_recognizeMap[x, y].Discover) continue;
+                    if (_recognizeMap.GetAroundPixels(x, y).Any(elem => elem.Discover && elem.Id == _recognizeMap[x, y].Id))
                     {
-                        _recognizeMap[x, y] = Const.ID_DISCOVER_ISOLINE_MAP;
+                        _recognizeMap[x, y].Discover = true;
                         continue;
                     }
 
                     var isoline = new Isoline();
+                    var id = _recognizeMap[x, y].Id;
+                    
                     isolines.Add(isoline);
                     
                     _startPoint = new Point(x, y);
                     _carriage = new Carriage(new Point(_startPoint.X-1,_startPoint.Y-1));
 
-                    while (NextStep())
+                    while (NextStep(id))
                     {
-                        isoline.Dots.AddRange(GetDots());
+                        isoline.Dots.AddRange(GetDots(id));
                     }
                     
                     _finderLayer.FindLevelLayer(isoline);
@@ -63,10 +63,9 @@ namespace ReliefModeling.Model.Recognize
 
             return isolines;
         }
-
-        private bool NextStep()
+        private bool NextStep(int id)
         {
-            var dots = InitDotArray();
+            var dots = InitDotArray(id);
 
             Direction direction;
             switch (MaskDots.GetMask(dots))
@@ -163,27 +162,25 @@ namespace ReliefModeling.Model.Recognize
             
             return !_carriage.Points[1, 1].Equals(_startPoint);
         }
-
-        private IEnumerable<Point> GetDots()
+        private IEnumerable<Point> GetDots(int id)
         {
             var dots = new List<Point>();
             for (var x = 0; x < _carriage.Points.GetLength(0); x++)
             {
                 for (var y = 0; y < _carriage.Points.GetLength(1);y++)
                 {
-                    if(!_recognizeMap.GetPixelSafe(_carriage.Points[x,y]).Equals(Const.ID_ISOLINE_MAP))continue;
+                    if(!_recognizeMap.GetPixelSafe(_carriage.Points[x,y]).Id.Equals(id))continue;
                     
                     dots.Add(new Point(_carriage.Points[x,y].X,_carriage.Points[x,y].Y));
-                    _recognizeMap[_carriage.Points[x, y].X, _carriage.Points[x, y].Y] = Const.ID_DISCOVER_ISOLINE_MAP;
+                    _recognizeMap[_carriage.Points[x, y].X, _carriage.Points[x, y].Y].Discover = true;
                 }
             }
 
             return dots;
         }
-
-        private bool[,] InitDotArray()
+        private bool[,] InitDotArray(int id)
         {   
-            return new [,]{
+            /*return new [,]{
                 {
                     _recognizeMap.GetPixelSafe(_carriage.Points[0, 0]).Equals(Const.ID_ISOLINE_MAP) ||
                     _recognizeMap.GetPixelSafe(_carriage.Points[0, 0]).Equals(Const.ID_DISCOVER_ISOLINE_MAP),
@@ -195,6 +192,19 @@ namespace ReliefModeling.Model.Recognize
                     _recognizeMap.GetPixelSafe(_carriage.Points[1, 0]).Equals(Const.ID_DISCOVER_ISOLINE_MAP),
                     _recognizeMap.GetPixelSafe(_carriage.Points[1, 1]).Equals(Const.ID_ISOLINE_MAP) ||
                     _recognizeMap.GetPixelSafe(_carriage.Points[1, 1]).Equals(Const.ID_DISCOVER_ISOLINE_MAP)
+                }
+            };*/
+            
+            return new [,]{
+                {
+                    _recognizeMap.GetPixelSafe(_carriage.Points[0, 0]).Id.Equals(id),
+                    
+                    _recognizeMap.GetPixelSafe(_carriage.Points[0, 1]).Id.Equals(id)
+                },
+                {
+                    _recognizeMap.GetPixelSafe(_carriage.Points[1, 0]).Id.Equals(id),
+                    
+                    _recognizeMap.GetPixelSafe(_carriage.Points[1, 1]).Id.Equals(id)
                 }
             };
         }

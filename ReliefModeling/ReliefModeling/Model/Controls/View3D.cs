@@ -17,13 +17,13 @@ namespace ReliefModeling.Model.Controls
         private const float PerspectiveViewFarZ = 500.0f;       //расстояние до дальней грани фрустума камеры
 
         private Point _coordMouse;
-        private Shape _shape;
+        private IShape _shape;
         private VertexBufferObject VertexBufferObject { get;}
         private Camera Camera { get;}
 
         #endregion
         
-        public Shape Shape
+        public IShape Shape
         {
             private get => _shape;
             set
@@ -55,7 +55,6 @@ namespace ReliefModeling.Model.Controls
 
             ActionOnCamera();
         }
-
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -73,7 +72,6 @@ namespace ReliefModeling.Model.Controls
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(Shape.Indices.Length * sizeof(int)), Shape.Indices, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
-        
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);            
@@ -104,7 +102,6 @@ namespace ReliefModeling.Model.Controls
 
             Camera.Radius += e.Delta > 0 ? 1 : -1;
         }
-
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
@@ -119,12 +116,10 @@ namespace ReliefModeling.Model.Controls
             }
             _coordMouse = e.Location;
         }
-
         private void TimerOnTick(object sender, EventArgs e)
         { 
             Invalidate();
         }
-
         private void ActionOnCamera()
         {
             GL.MatrixMode(MatrixMode.Modelview);

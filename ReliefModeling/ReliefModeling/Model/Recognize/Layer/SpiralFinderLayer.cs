@@ -19,7 +19,7 @@ namespace ReliefModeling.Model.Recognize.Layer
             var spiral = new Spiral(isoline.Dots[0]);
             var point = spiral.Next();
 
-            while (true)
+            /*while (true)
             {
                 while (isoline.Dots.Contains(point)) point = spiral.Next();
 
@@ -42,7 +42,7 @@ namespace ReliefModeling.Model.Recognize.Layer
                 }
             
                 while (!isoline.Dots.Contains(point)) point = spiral.Next();   
-            }
+            }*/
         }
     }
 }

@@ -23,6 +23,7 @@ namespace ReliefModeling.Model.Recognize
     public class Isoline
     {
         public List<Point> Dots { get; set; } = new List<Point>();
-        public Level Level;
+        public int Level { get; set; }
+        //public Level Level;
     }
 }
